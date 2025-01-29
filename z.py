@@ -93,10 +93,8 @@ ind_dict = {}
 data = ""
 cookies = ""
 strings = "asdfghjklqwertyuiopZXCVBNMQWERTYUIOPASDFGHJKLzxcvbnm1234567890&"
-###################################################
 Intn = random.randint
 Choice = random.choice
-###################################################
 def build_threads(mode,thread_num,event,socks_type,ind_rlock):
 	for _ in range(thread_num):
 			th = threading.Thread(target = cc,args=(event,socks_type,ind_rlock,))
@@ -204,8 +202,6 @@ def CheckerOption():
         downloadsocks(choice)
     else:
         pass
-
-    # Đường dẫn tệp proxy
     if choice == "4":
         out_file = input(Colorate.Diagonal(Colors.red_to_white, "> Nhập đường dẫn đến tệp socks4.txt: "))
         if out_file == '':
@@ -220,13 +216,11 @@ def CheckerOption():
         print("> Chỉ hỗ trợ socks4 hoặc socks5!")
         sys.exit(1)
 
-    # Đọc và làm sạch danh sách proxy
     with open(out_file, "r") as f:
         raw_proxies = f.readlines()
     
     proxies = []
     for line in raw_proxies:
-        # Làm sạch tiền tố
         if line.startswith("socks4://"):
             proxies.append(line.replace("socks4://", "").strip())
         elif line.startswith("socks5://"):
@@ -234,16 +228,11 @@ def CheckerOption():
         else:
             proxies.append(line.strip())
 
-    # Kiểm tra nếu danh sách proxy trống
     if len(proxies) == 0:
         print("> Danh sách proxy trống, xin hãy tải lại!")
         sys.exit(1)
-
-    # Lưu danh sách proxy đã làm sạch vào tệp
     with open(out_file, "w") as f:
         f.write("\n".join(proxies) + "\n")
-
-    # Hiển thị số lượng proxy
     print(Colorate.Diagonal(Colors.red_to_white, f"> Số Proxy Socks{choice} : {len(proxies)}"))
     time.sleep(0.03)
 
@@ -274,23 +263,7 @@ def OutputToScreen(ind_rlock):
 	while 1:
 		if i > 3:
 			i = 0
-		# print("{:^70}".format("Trạng thái tấn công"))
-		# print("{:^70}".format("IP:PORT   <->   RPS    "))
 		ind_rlock.acquire()
-		# top_num = 0
-		# top10= sorted(ind_dict, key=ind_dict.get, reverse=True)
-		# if len(top10) > 10:
-		# 	top_num = 10
-		# else:
-		# 	top_num = len(top10)
-		# for num in range(top_num):
-		# 	top = "none"
-		# 	rps = 0
-		# 	if len(ind_dict) != 0:
-		# 		top = top10[num]
-		# 		rps = ind_dict[top]
-		# 		ind_dict[top] = 0
-		# 	#print("{:^70}".format("{:2d}. {:^22s} | Rps: {:d}".format(num+1,top,rps)))
 		total = 0
 		for k,v in ind_dict.items():
 			total = total + v
@@ -381,40 +354,40 @@ def checking(lines,socks_type,ms,rlock,):
 	nums += 1
 
 def check_socks(ms):
-	global nums
-	thread_list=[]
-	rlock = threading.RLock()
-	for lines in list(proxies):
-		if choice == "5":
-			th = threading.Thread(target=checking,args=(lines,5,ms,rlock,))
-			th.start()
-		if choice == "4":
-			th = threading.Thread(target=checking,args=(lines,4,ms,rlock,))
-			th.start()
-		thread_list.append(th)
-		time.sleep(0.01)
-		sys.stdout.write(Fore.YELLOW + "> Đã kiểm tra "+str(nums)+" proxy\r" + Style.RESET_ALL)
-		sys.stdout.flush()
-	for th in list(thread_list):
-		th.join()
-		sys.stdout.write(Fore.YELLOW + "> Đã kiểm tra "+str(nums)+" proxy\r" + Style.RESET_ALL)
-		sys.stdout.flush()
-	print(Colorate.Diagonal(Colors.red_to_white,"\r\n> Đã kiểm tra toàn bộ proxy, số proxy hoạt động: ")+str(len(proxies)) + Style.RESET_ALL)
-	ans = input(Colorate.Diagonal(Colors.red_to_white,"> Bạn có muốn lưu toàn bộ proxy hoạt động vào một tệp? (y/n, mặc định = y): "))
-	if ans == "y" or ans == "":
-		if choice == "4":
-			with open("socks4.txt", 'wb') as fp:
-				for lines in list(proxies):
-					fp.write(bytes(lines,encoding='utf8'))
-			fp.close()
-			print(Fore.LIGHTGREEN_EX +"!!! Tệp socks4 live đã được lưu thành socks4.txt."+ Style.RESET_ALL)
-		elif choice == "5":
-			with open("socks5.txt", 'wb') as fp:
-				for lines in list(proxies):
-					fp.write(bytes(lines,encoding='utf8'))
-			fp.close()
-			print(Fore.LIGHTGREEN_EX +"!!! Tệp socks5 live đã được lưu thành socks5.txt."+ Style.RESET_ALL)
-			
+    global nums
+    thread_list = []
+    rlock = threading.RLock()
+    for lines in list(proxies):
+        if choice == "5":
+            th = threading.Thread(target=checking, args=(lines, 5, ms, rlock,))
+            th.start()
+        if choice == "4":
+            th = threading.Thread(target=checking, args=(lines, 4, ms, rlock,))
+            th.start()
+        thread_list.append(th)
+        time.sleep(0.01)
+        sys.stdout.write(Fore.LIGHTBLUE_EX + "> Đã kiểm tra " + str(nums) + " proxy\r" + Style.RESET_ALL)
+        sys.stdout.flush()
+    for th in list(thread_list):
+        th.join()
+        sys.stdout.write(Fore.LIGHTYELLOW_EX + "> Đã kiểm tra " + str(nums) + " proxy\r" + Style.RESET_ALL)
+        sys.stdout.flush()
+    print(Colorate.Diagonal(Colors.red_to_white, "\r\n> Đã kiểm tra toàn bộ proxy, số proxy hoạt động: ") + str(len(proxies)) + Style.RESET_ALL)
+    ans = input(Colorate.Diagonal(Colors.red_to_white, "> Bạn có muốn lưu toàn bộ proxy hoạt động vào một tệp? (y/n, mặc định = y): "))
+    if ans == "y" or ans == "":
+        if choice == "4":
+            with open("socks4.txt", 'w') as fp:  # Sử dụng 'w' thay vì 'wb' để ghi dưới dạng text
+                for lines in list(proxies):
+                    fp.write(lines + "\n")  # Thêm ký tự xuống dòng sau mỗi proxy
+            fp.close()
+            print(Fore.LIGHTGREEN_EX + "!!! Tệp socks4 live đã được lưu thành socks4.txt." + Style.RESET_ALL)
+        elif choice == "5":
+            with open("socks5.txt", 'w') as fp:  # Sử dụng 'w' thay vì 'wb' để ghi dưới dạng text
+                for lines in list(proxies):
+                    fp.write(lines + "\n")  # Thêm ký tự xuống dòng sau mỗi proxy
+            fp.close()
+            print(Fore.LIGHTGREEN_EX + "!!! Tệp socks5 live đã được lưu thành socks5.txt." + Style.RESET_ALL)
+
 def check_list(socks_file):
 	print("> Kiểm tra danh sách")
 	temp = open(socks_file).readlines()
@@ -430,7 +403,7 @@ def check_list(socks_file):
 
 def downloadsocks(choice):
     urls_socks4 = [
-		"https://raw.githubusercontent.com/r00tee/Proxy-List/refs/heads/main/Socks4.txt",
+	"https://raw.githubusercontent.com/r00tee/Proxy-List/refs/heads/main/Socks4.txt",
         "https://raw.githubusercontent.com/B4RC0DE-TM/proxy-list/main/SOCKS4.txt",
         "https://raw.githubusercontent.com/jetkai/proxy-list/main/online-proxies/txt/proxies-socks4.txt",
         "https://raw.githubusercontent.com/mmpx12/proxy-list/master/socks4.txt",
@@ -441,14 +414,14 @@ def downloadsocks(choice):
         "https://www.proxy-list.download/api/v1/get?type=socks4",
         "https://api.proxyscrape.com/?request=displayproxies&proxytype=socks4&country=all",
         #"https://api.openproxylist.xyz/socks4.txt",
-		"https://raw.githubusercontent.com/SevenworksDev/proxy-list/refs/heads/main/proxies/socks4.txt",
+	"https://raw.githubusercontent.com/SevenworksDev/proxy-list/refs/heads/main/proxies/socks4.txt",
         "https://raw.githubusercontent.com/officialputuid/KangProxy/refs/heads/KangProxy/socks4/socks4.txt",
         "https://raw.githubusercontent.com/ALIILAPRO/Proxy/refs/heads/main/socks4.txt",
         "https://raw.githubusercontent.com/monosans/proxy-list/refs/heads/main/proxies/socks4.txt",
         "https://raw.githubusercontent.com/monosans/proxy-list/refs/heads/main/proxies_anonymous/socks4.txt",
         "https://raw.githubusercontent.com/vakhov/fresh-proxy-list/refs/heads/master/socks4.txt",
-		"https://raw.githubusercontent.com/Zaeem20/FREE_PROXIES_LIST/refs/heads/master/socks4.txt",
-		"https://raw.githubusercontent.com/yemixzy/proxy-list/main/proxies/socks4.txt"
+	"https://raw.githubusercontent.com/Zaeem20/FREE_PROXIES_LIST/refs/heads/master/socks4.txt",
+	"https://raw.githubusercontent.com/yemixzy/proxy-list/main/proxies/socks4.txt"
     ]
     
     urls_socks5 = [
@@ -459,12 +432,12 @@ def downloadsocks(choice):
         "https://raw.githubusercontent.com/officialputuid/KangProxy/refs/heads/KangProxy/socks5/socks5.txt",
     	"https://raw.githubusercontent.com/SevenworksDev/proxy-list/refs/heads/main/proxies/socks5.txt",
         "https://raw.githubusercontent.com/im-razvan/proxy_list/refs/heads/main/socks5.txt",
-		"https://raw.githubusercontent.com/MuRongPIG/Proxy-Master/refs/heads/main/socks5_checked.txt",
-		"https://raw.githubusercontent.com/r00tee/Proxy-List/refs/heads/main/Socks5.txt",
-		"https://raw.githubusercontent.com/roosterkid/openproxylist/refs/heads/main/SOCKS5_RAW.txt",
-		"https://raw.githubusercontent.com/yemixzy/proxy-list/main/proxies/socks5.txt",
-		"https://raw.githubusercontent.com/monosans/proxy-list/refs/heads/main/proxies_anonymous/socks5.txt"
-		"https://raw.githubusercontent.com/dpangestuw/Free-Proxy/refs/heads/main/socks5_proxies.txt",
+	"https://raw.githubusercontent.com/MuRongPIG/Proxy-Master/refs/heads/main/socks5_checked.txt",
+	"https://raw.githubusercontent.com/r00tee/Proxy-List/refs/heads/main/Socks5.txt",
+	"https://raw.githubusercontent.com/roosterkid/openproxylist/refs/heads/main/SOCKS5_RAW.txt",
+	"https://raw.githubusercontent.com/yemixzy/proxy-list/main/proxies/socks5.txt",
+	"https://raw.githubusercontent.com/monosans/proxy-list/refs/heads/main/proxies_anonymous/socks5.txt"
+	"https://raw.githubusercontent.com/dpangestuw/Free-Proxy/refs/heads/main/socks5_proxies.txt",
     ]
     if choice == "4":
         filename = "socks4.txt"
